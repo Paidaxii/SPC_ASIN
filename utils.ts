@@ -1,7 +1,4 @@
-/**
- * Global declaration for SheetJS (loaded via CDN in index.html)
- */
-declare var XLSX: any;
+import * as XLSX from 'xlsx';
 
 /**
  * Parses raw text (CSV or TSV) into a Map.
