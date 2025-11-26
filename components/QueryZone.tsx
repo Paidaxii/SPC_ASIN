@@ -11,11 +11,8 @@ const QueryZone: React.FC<QueryZoneProps> = ({ referenceMap }) => {
   const [status, setStatus] = useState<{ found: number; missing: number } | null>(null);
   const [copied, setCopied] = useState(false);
 
-  // Auto-process when input or map changes
   useEffect(() => {
     if (!referenceMap || !input.trim()) {
-      // Don't clear output immediately if map is missing to prevent flickering during reload,
-      // but do clear if input is cleared manually.
       if (!input) {
         setOutput('');
         setStatus(null);
@@ -26,7 +23,7 @@ const QueryZone: React.FC<QueryZoneProps> = ({ referenceMap }) => {
     const { resultStr, found, missing } = processQuery(input, referenceMap);
     setOutput(resultStr);
     setStatus({ found, missing });
-    setCopied(false); // Reset copied state on new result
+    setCopied(false);
   }, [input, referenceMap]);
 
   const handleCopy = async () => {
@@ -43,83 +40,98 @@ const QueryZone: React.FC<QueryZoneProps> = ({ referenceMap }) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
       {/* Input Section */}
-      <div className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-          <label htmlFor="input-area" className="font-bold text-slate-700 text-sm flex items-center gap-2">
-             2. Input SPCs (One per line)
+      <div className="flex flex-col h-full bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden group hover:border-indigo-200 transition-colors duration-300">
+        <div className="px-5 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+          <label htmlFor="input-area" className="font-semibold text-gray-700 text-sm flex items-center gap-2">
+             <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+             Input SPCs
           </label>
-          <button 
-             onClick={() => setInput('')}
-             className="text-xs text-slate-500 hover:text-red-600 px-2 py-1 rounded hover:bg-slate-200 transition-colors"
-          >
-            Clear
-          </button>
+          {input && (
+            <button 
+               onClick={() => setInput('')}
+               className="text-xs font-medium text-gray-400 hover:text-red-500 transition-colors"
+            >
+              Clear
+            </button>
+          )}
         </div>
-        <textarea
-          id="input-area"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="A1&#10;A2&#10;SPC..."
-          className="flex-1 p-4 w-full resize-none focus:outline-none focus:bg-blue-50/30 transition-colors font-mono text-sm leading-6"
-          spellCheck={false}
-        />
-        <div className="p-2 border-t border-slate-100 text-xs text-slate-400 bg-slate-50 text-right">
-           Lines: {input ? input.split(/\r?\n/).length : 0}
+        <div className="flex-1 relative">
+            <textarea
+            id="input-area"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Paste codes here (one per line)..."
+            className="absolute inset-0 w-full h-full p-5 resize-none focus:outline-none focus:bg-indigo-50/10 transition-colors font-mono text-sm leading-relaxed text-gray-700"
+            spellCheck={false}
+            />
+        </div>
+        <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 text-xs text-gray-400 flex justify-end">
+           {input ? input.split(/\r?\n/).filter(line => line.trim() !== '').length : 0} lines
         </div>
       </div>
 
       {/* Output Section */}
-      <div className="flex flex-col h-full bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden relative">
-        <div className="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-          <label htmlFor="output-area" className="font-bold text-slate-700 text-sm flex items-center gap-2">
-            3. Result ASINs
+      <div className={`flex flex-col h-full bg-white rounded-2xl shadow-sm border overflow-hidden relative transition-all duration-300 ${status ? 'border-indigo-200 ring-2 ring-indigo-500/5' : 'border-gray-200'}`}>
+        <div className="px-5 py-3 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 h-[53px]">
+          <label htmlFor="output-area" className="font-semibold text-gray-700 text-sm flex items-center gap-2">
+            <span className={`w-2 h-2 rounded-full ${status ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+            Result ASINs
           </label>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {status && (
-              <span className="text-xs text-slate-500 mr-2">
-                Matched: <span className="font-bold text-green-600">{status.found}</span> / Missing: <span className="font-bold text-red-500">{status.missing}</span>
-              </span>
+              <div className="flex items-center text-xs font-medium bg-gray-100 rounded-md px-2 py-1 gap-2">
+                <span className="text-green-700 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    {status.found}
+                </span>
+                <span className="w-px h-3 bg-gray-300"></span>
+                <span className="text-red-600 flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    {status.missing}
+                </span>
+              </div>
             )}
+            
             <button
               onClick={handleCopy}
               disabled={!output}
-              className={`text-xs font-semibold px-4 py-1.5 rounded-md transition-all flex items-center gap-1.5 ${
+              className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
                 copied 
-                  ? "bg-green-600 text-white shadow-md transform scale-105" 
-                  : "bg-blue-600 text-white hover:bg-blue-700 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  ? "bg-green-600 text-white shadow-md scale-105" 
+                  : "bg-white text-gray-600 border border-gray-200 hover:border-indigo-300 hover:text-indigo-600 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-gray-200 disabled:hover:text-gray-600"
               }`}
             >
               {copied ? (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Copied!
-                </>
+                <>Copied!</>
               ) : (
-                <>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                  Copy to Clipboard
-                </>
+                <>Copy</>
               )}
             </button>
           </div>
         </div>
         
-        <textarea
-          id="output-area"
-          readOnly
-          value={output}
-          placeholder="Result will appear here..."
-          className={`flex-1 p-4 w-full resize-none focus:outline-none font-mono text-sm leading-6 ${!referenceMap ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-white text-slate-800'}`}
-          spellCheck={false}
-        />
-        {!referenceMap && (
-           <div className="absolute inset-0 top-14 flex items-center justify-center pointer-events-none">
-             <div className="bg-white/80 p-4 rounded-lg text-slate-500 text-sm backdrop-blur-sm shadow-sm border border-slate-200">
-               Please load Reference Data first
-             </div>
-           </div>
-        )}
+        <div className="flex-1 relative bg-gray-50/30">
+            <textarea
+            id="output-area"
+            readOnly
+            value={output}
+            placeholder="..."
+            className={`absolute inset-0 w-full h-full p-5 resize-none focus:outline-none font-mono text-sm leading-relaxed ${!referenceMap ? 'text-gray-400' : 'text-gray-800'}`}
+            spellCheck={false}
+            />
+            {!referenceMap && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none bg-white/60 backdrop-blur-[1px]">
+                <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-100 text-center max-w-[240px]">
+                    <div className="w-12 h-12 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    </div>
+                    <p className="text-sm font-medium text-gray-600">Waiting for Data</p>
+                    <p className="text-xs text-gray-400 mt-1">Please upload the reference file in the section above.</p>
+                </div>
+            </div>
+            )}
+        </div>
       </div>
     </div>
   );

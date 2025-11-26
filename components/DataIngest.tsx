@@ -86,101 +86,118 @@ SPC002,ASIN002`;
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><path d="M12 18v-6"></path><path d="M9 15h6"></path></svg>
-          1. Reference Data (SPC → ASIN)
-        </h2>
-        {stats && (
-          <span className="text-xs font-medium bg-green-100 text-green-700 px-2 py-1 rounded-full">
-            Ready: {stats.uniqueKeys.toLocaleString()} codes
-          </span>
+    <div className="bg-white p-1 rounded-2xl shadow-sm border border-gray-200">
+      <div className="p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+          <div>
+            <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+              Reference Data
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">Upload your SPC to ASIN mapping source</p>
+          </div>
+          
+          {stats ? (
+             <div className="flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 rounded-full border border-green-100 animate-pulse-once">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span className="text-xs font-semibold">Ready: {stats.uniqueKeys.toLocaleString()} codes</span>
+             </div>
+          ) : (
+            <button 
+              onClick={loadSampleData}
+              className="text-xs font-medium text-indigo-600 hover:text-indigo-800 hover:bg-indigo-50 px-3 py-1.5 rounded-full transition-colors"
+            >
+              Load Sample Data
+            </button>
+          )}
+        </div>
+
+        {/* Custom Tabs */}
+        <div className="bg-gray-100/70 p-1 rounded-lg inline-flex mb-6 w-full sm:w-auto">
+          <button 
+            onClick={() => setMode('file')}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+              mode === 'file' 
+                ? 'bg-white text-gray-900 shadow-sm' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Upload File
+          </button>
+          <button 
+            onClick={() => setMode('paste')}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 ${
+              mode === 'paste' 
+                ? 'bg-white text-gray-900 shadow-sm' 
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+            Paste Text
+          </button>
+        </div>
+
+        {mode === 'file' ? (
+          <div 
+            className={`relative group cursor-pointer border-2 border-dashed rounded-xl p-8 text-center transition-all duration-300 ease-in-out ${
+              dragActive 
+                ? "border-indigo-500 bg-indigo-50/50 scale-[1.01]" 
+                : "border-gray-200 hover:border-indigo-300 hover:bg-gray-50"
+            }`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              className="hidden" 
+              accept=".csv,.txt,.tsv,.xlsx,.xls"
+              onChange={handleChange} 
+            />
+            
+            <div className="flex flex-col items-center justify-center space-y-3">
+              <div className={`p-3 rounded-full transition-colors ${dragActive ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-500'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-gray-700">
+                  <span className="text-indigo-600 hover:underline">Click to upload</span> or drag and drop
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  CSV, Excel, or Text files (Col A: SPC, Col B: ASIN)
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="relative">
+              <textarea
+                value={pasteContent}
+                onChange={(e) => setPasteContent(e.target.value)}
+                placeholder="Paste your data here..."
+                className="w-full h-32 p-4 text-sm font-mono bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none placeholder:text-gray-400"
+              />
+              <div className="absolute bottom-3 right-3 text-xs text-gray-400 pointer-events-none bg-gray-50 px-1">
+                Col A & B
+              </div>
+            </div>
+            <button
+              onClick={handlePasteProcess}
+              disabled={!pasteContent.trim()}
+              className="w-full bg-indigo-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md"
+            >
+              Process Data
+            </button>
+          </div>
         )}
       </div>
-
-      {/* Tabs */}
-      <div className="flex gap-4 mb-4 text-sm border-b border-slate-100 pb-2">
-        <button 
-          onClick={() => setMode('file')}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${mode === 'file' ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-500 hover:text-slate-800'}`}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-          Upload File
-        </button>
-        <button 
-          onClick={() => setMode('paste')}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${mode === 'paste' ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-slate-500 hover:text-slate-800'}`}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
-          Paste Text (Feishu/Excel)
-        </button>
-      </div>
-
-      {mode === 'file' ? (
-        <div 
-          className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors duration-200 ${
-            dragActive ? "border-blue-500 bg-blue-50" : "border-slate-300 hover:bg-slate-50"
-          }`}
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-        >
-          <input 
-            type="file" 
-            ref={fileInputRef}
-            className="hidden" 
-            accept=".csv,.txt,.tsv,.xlsx,.xls"
-            onChange={handleChange} 
-          />
-          
-          <div className="space-y-2">
-            <div className="flex justify-center text-blue-600 mb-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-            </div>
-            <p className="text-sm text-slate-600">
-              Drag & drop your file here, or{' '}
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="text-blue-600 font-semibold hover:text-blue-700 underline"
-              >
-                browse
-              </button>
-            </p>
-            <p className="text-xs text-slate-400">
-              Supports CSV, TXT, TSV, XLSX, XLS. (Col A = SPC, Col B = ASIN)
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-3">
-          <textarea
-            value={pasteContent}
-            onChange={(e) => setPasteContent(e.target.value)}
-            placeholder="Go to Feishu/Excel, select your data (A & B columns), copy (Ctrl+C), and paste here..."
-            className="w-full h-32 p-3 text-sm font-mono border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <button
-            onClick={handlePasteProcess}
-            disabled={!pasteContent.trim()}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Process Pasted Data
-          </button>
-        </div>
-      )}
-
-      {!stats && (
-        <div className="mt-4 text-center">
-          <button 
-            onClick={loadSampleData}
-            className="text-xs text-slate-500 hover:text-blue-600 underline"
-          >
-            Load sample data for testing
-          </button>
-        </div>
-      )}
     </div>
   );
 };
