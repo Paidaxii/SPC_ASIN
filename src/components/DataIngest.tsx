@@ -84,109 +84,115 @@ SPC003,ASIN003`;
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all hover:shadow-md duration-300">
-      <div className="p-6 md:p-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <h2 className="text-xl font-bold text-slate-800 tracking-tight">Reference Data</h2>
-            <p className="text-slate-500 text-sm mt-1">Upload your SPC to ASIN mapping (Excel or CSV)</p>
+    <div className="p-8 md:p-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           </div>
-          
-          {stats ? (
-            <div className="flex items-center gap-2.5 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-100">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-              </span>
-              <span className="text-sm font-semibold">{stats.uniqueKeys.toLocaleString()} codes ready</span>
-            </div>
-          ) : (
-            <button 
-              onClick={loadSampleData}
-              className="text-xs font-medium text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50 px-4 py-2 rounded-full transition-colors border border-transparent hover:border-indigo-100"
-            >
-              Load Sample
-            </button>
-          )}
+          <div>
+            <h2 className="text-xl font-bold text-slate-800">1. Upload Reference Data</h2>
+            <p className="text-slate-500 mt-1 text-sm">Upload your master list (SPC to ASIN)</p>
+          </div>
         </div>
 
-        {/* Minimal Tabs */}
-        <div className="flex space-x-6 border-b border-slate-100 mb-6">
-          <button
-            onClick={() => setMode('file')}
-            className={`pb-3 text-sm font-medium transition-all relative ${
-              mode === 'file' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            File Upload
-            {mode === 'file' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 rounded-t-full"></span>}
-          </button>
-          <button
-            onClick={() => setMode('paste')}
-            className={`pb-3 text-sm font-medium transition-all relative ${
-              mode === 'paste' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-800'
-            }`}
-          >
-            Direct Input
-            {mode === 'paste' && <span className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 rounded-t-full"></span>}
-          </button>
-        </div>
-
-        {mode === 'file' ? (
-          <div 
-            className={`relative group cursor-pointer border-2 border-dashed rounded-xl p-10 text-center transition-all duration-300 ${
-              dragActive 
-                ? "border-indigo-500 bg-indigo-50/30 scale-[1.01]" 
-                : "border-slate-200 hover:border-indigo-400 hover:bg-slate-50"
-            }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            <input 
-              type="file" 
-              ref={fileInputRef}
-              className="hidden" 
-              accept=".csv,.txt,.tsv,.xlsx,.xls"
-              onChange={handleChange} 
-            />
-            
-            <div className="flex flex-col items-center justify-center space-y-4">
-              <div className={`p-4 rounded-full transition-colors ${dragActive ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-500'}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-              </div>
-              <div>
-                <p className="text-base font-medium text-slate-700">
-                  Drop your file here, or <span className="text-indigo-600 hover:underline">browse</span>
-                </p>
-                <p className="text-xs text-slate-400 mt-2">
-                  Supports CSV, Excel, or Text (Column A: SPC, Column B: ASIN)
-                </p>
-              </div>
+        {stats ? (
+          <div className="flex items-center gap-3 px-5 py-2.5 bg-green-50 text-green-700 rounded-full border border-green-100 shadow-sm animate-fade-in">
+            <div className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
             </div>
+            <span className="font-semibold">{stats.uniqueKeys.toLocaleString()} codes loaded</span>
           </div>
         ) : (
-          <div className="space-y-4 animate-fade-in">
+          <button 
+            onClick={loadSampleData}
+            className="text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 px-5 py-2.5 rounded-full transition-colors"
+          >
+            Use Sample Data
+          </button>
+        )}
+      </div>
+
+      <div className="bg-slate-50 p-1.5 rounded-2xl inline-flex w-full md:w-auto mb-6 shadow-inner">
+        <button
+          onClick={() => setMode('file')}
+          className={`flex-1 md:flex-none px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+            mode === 'file'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          File Upload
+        </button>
+        <button
+          onClick={() => setMode('paste')}
+          className={`flex-1 md:flex-none px-6 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+            mode === 'paste'
+              ? 'bg-white text-blue-600 shadow-sm'
+              : 'text-slate-500 hover:text-slate-700'
+          }`}
+        >
+          Paste Text
+        </button>
+      </div>
+
+      {mode === 'file' ? (
+        <div 
+          className={`relative cursor-pointer border-2 border-dashed rounded-3xl p-10 text-center transition-all duration-300 ${
+            dragActive 
+              ? "border-blue-500 bg-blue-50/50 scale-[1.01]" 
+              : "border-slate-300 hover:border-blue-400 hover:bg-slate-50"
+          }`}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <input 
+            type="file" 
+            ref={fileInputRef}
+            className="hidden" 
+            accept=".csv,.txt,.tsv,.xlsx,.xls"
+            onChange={handleChange} 
+          />
+          
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors ${dragActive ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-400'}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+            <div>
+              <p className="text-lg font-semibold text-slate-700">
+                Click to upload or drag & drop
+              </p>
+              <p className="text-sm text-slate-400 mt-2">
+                Supported formats: .csv, .xlsx, .txt
+              </p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4 animate-fade-in">
+          <div className="relative">
             <textarea
               value={pasteContent}
               onChange={(e) => setPasteContent(e.target.value)}
-              placeholder="Paste data here...&#10;SPC001, ASIN001&#10;SPC002, ASIN002"
-              className="w-full h-40 p-4 text-sm font-mono bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all resize-none placeholder:text-slate-400"
+              placeholder="Example:&#10;SPC001, ASIN123&#10;SPC002, ASIN456"
+              className="w-full h-48 p-5 text-sm font-mono bg-white border border-slate-300 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all resize-none shadow-sm placeholder:text-slate-300"
             />
-            <div className="flex justify-end">
-              <button
-                onClick={handlePasteProcess}
-                disabled={!pasteContent.trim()}
-                className="bg-indigo-600 text-white px-6 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transform duration-200"
-              >
-                Process Data
-              </button>
-            </div>
           </div>
-        )}
-      </div>
+          <div className="flex justify-end">
+            <button
+              onClick={handlePasteProcess}
+              disabled={!pasteContent.trim()}
+              className="bg-blue-600 text-white px-8 py-3 rounded-full text-sm font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20 disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transform duration-200"
+            >
+              Process Reference Data
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
