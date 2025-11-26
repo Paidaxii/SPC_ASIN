@@ -1,0 +1,5 @@
+{
+  "name": "SPC-ASIN Matcher",
+  "description": "A high-performance bulk query tool to map SPC codes to ASINs using CSV or Excel data sources.",
+  "requestFramePermissions": []
+}
